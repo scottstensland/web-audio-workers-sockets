@@ -5,8 +5,9 @@
   
 
   <!-- // <script type="text/javascript" src="communication_sockets.js"></script> -->
-  <script type="text/javascript" src="web_audio_player.js"></script>
+  <!-- // <script type="text/javascript" src="web_audio_player.js"></script> -->
   <script type="text/javascript" src="client_comms_mgr.js"></script>
+  <script type="text/javascript" src="webworker_mgr.js"></script>
 
     <style>
       body {
@@ -65,7 +66,7 @@ function internal_webGLStart() {
 
   // ----------------------
 
-  web_audio_player.init_context_audio();
+  // web_audio_player.init_context_audio();
 
   // shim layer with setTimeout fallback
 window.requestAnimFrame = (function(){
@@ -108,15 +109,19 @@ return {
 
         <br>     <!-- .....................  -->
 
-    <button onclick="web_audio_player.render_buffer(8)">stream audio from server</button>
+    <!-- <button onclick="web_audio_player.render_buffer(8)">stream audio from server</button> -->
     <button onclick="client_comms_mgr.sayHi()">say Hi</button>
 
     <button onclick="client_comms_mgr.tell_worker_heavy(200000)">worker heavy load</button>
-    <button onclick="client_comms_mgr.tell_worker_connect_to_server()">worker conn to server</button>
-
-
+    <button title="this works on chrome yet Fails on firefox"  onclick="client_comms_mgr.tell_worker_connect_to_server()">create WebSocket inside WebWorker</button>
 
         <br>     <!-- .....................  -->
+        <br>     <!-- .....................  -->
+
+    <button onclick="webworker_mgr.sayHi()">say Hi to webworker</button>
+    <button title="this Fails on every browser" 
+            onclick="webworker_mgr.create_webaudio_context()">create Web Audio context inside webworker</button>
+
 
     <output id="result"></output>
 
