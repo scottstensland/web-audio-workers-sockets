@@ -36,11 +36,11 @@ var communication_sockets = function() {
 
     var create_websocket_connection = function() {
 
-        // if (!"WebSocket" in window) {
+        if (!"WebSocket" in window) {
 
-        //     alert("Boo Hoo WebSocket is not available on this browser");
-        //     return;
-        // };
+            alert("Boo Hoo WebSocket is not available on this browser");
+            return;
+        };
 
         if (flag_connected) {
 
@@ -50,7 +50,10 @@ var communication_sockets = function() {
         console.log('client in browser says ... WebSocket is supported by your browser.');
 
         host = location.origin.replace(/^http/, 'ws');
-        web_socket = new WebSocket(host);
+        // web_socket = new WebSocket(host);
+        web_socket = new WebSocket(host, ["chat"]);
+
+
 
         console.log("web_socket ", web_socket);
 
@@ -335,6 +338,20 @@ var communication_sockets = function() {
                 break;
             }
 
+            case 6 : {
+
+                console.log('...  socket_client mode Five  ... stream audio buffer from server ');
+
+                cb_for_client = given_callback;
+
+                var requested_action = "stream_audio_to_client";
+                var requested_source = "Justice_Genesis_first_30_seconds_tight.wav"; // get buffer of this from svr
+
+                request_server_send_binary(requested_action, requested_source, given_callback);
+
+                break;
+            }
+
             default : {
 
                 console.log('...  socket_client mode NONE doing default  ');
@@ -343,7 +360,7 @@ var communication_sockets = function() {
     }; //		socket_client
 
     // ---------------------------------------
-    /*
+
     return { // to make visible to calling reference frame list function here comma delimited,
 
         socket_client: socket_client,
@@ -356,121 +373,5 @@ var communication_sockets = function() {
         // get_sampled_buffer: get_sampled_buffer,
         // get_size_sampled_buffer: get_size_sampled_buffer
     };
-    */
-
-    // ----------------
-
-
-    var lick_counter = 0;
-
-// var size_heavy = 10;
-// var some_heavy_load = new Float32Array(size_heavy);
-
-var some_heavy_load;
-var flag_was_load_allocated = false;
-
-var pop_heavy = function(given_size) {
-
-    if (false == flag_was_load_allocated) {
-
-        some_heavy_load = new Float32Array(given_size);
-
-        flag_was_load_allocated = true;
-    }
-
-    for (var index = 0; index < given_size; index++) {
-
-        some_heavy_load[index] = 3.14159 * index;
-    }
-
-    return some_heavy_load;
-}
-
-self.onmessage = function(e) {
-
-/*
-    var some_Float32Array = e.data;
-
-    self.postMessage("worker got typed array toString   " + some_Float32Array.toString());
-    self.postMessage("worker got typed array byteLength " + some_Float32Array.byteLength);
-
-    var some_heavy_load = new Float32Array(some_Float32Array);
-
-    self.postMessage("worker some_heavy_load Float32Array length" + some_heavy_load.length);
-*/
-
-    var data = e.data;
-
-    console.log("onmessage    data  UUUU ", data);
-
-    switch (data.cmd) {
-
-        case 'start':
-            self.postMessage("worker started ii " + data.msg);
-            break;
-
-        case "tell_worker_connect_to_server" :
-
-            console.log("tell_worker_connect_to_server ");
-
-            create_websocket_connection();
-
-            self.postMessage(data.cmd);
-            break;
-
-        case "browser_send_array_to_worker" :
-
-            self.postMessage("cool worker got big heavy load");
-
-            some_heavy_load = new Float32Array(data.heavy_load);
-
-            self.postMessage("worker some_heavy_load Float32Array length" + some_heavy_load.length);
-            break;
-
-        case "tell_worker_to_return_heavy_load" :
-
-            self.postMessage("tell_worker_to_return_heavy_load");
-            // self.postMessage(data.cmd);
-
-            var size_heavy = data.size_heavy;
-
-            console.log("WWWWorker side size_heavy ", size_heavy);
-            console.log("WWWWorker side data ", data);
-
-            // pop_heavy(size_heavy);
-
-            var curr_msg = {
-              'cmd': 'worker_returning_heavy_load', 
-              'msg': 'Hi'
-            };
-
-            self.postMessage(curr_msg);
-            self.postMessage(pop_heavy(size_heavy));
-
-            break;
-/*
-        case "pop_heavy" : 
-            pop_heavy(10);
-            self.postMessage("worker populated heavy TOP " + data.msg);
-
-            self.postMessage(some_heavy_load);
-            self.postMessage("worker populated heavy BOTTOM " + data.msg);
-            break;
-*/
-
-
-        case 'stop':
-            self.postMessage("worker stopped " + data.msg + "(buttons will no longer work)");
-            self.close(); // Terminates the worker.
-            break;
-
-        default: {
-
-            lick_counter++;
-            self.postMessage('Unknown command to : ' + data.msg +
-                            " over again " + lick_counter);
-        }
-     };
-};
 
 }(); //  communication_sockets = function()

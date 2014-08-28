@@ -19,6 +19,8 @@ var web_audio_player = function() {
 
     var audio_obj_from_server = {};
 
+    var flag_audio_rendering = false;
+
     var did_one_draw = false;
 
     var was_anything_stopped = false;
@@ -77,6 +79,32 @@ var web_audio_player = function() {
 
     // ---
 
+    function top_up_buffer(audio_obj_from_server) {
+
+        // bbb
+   
+        console.log("top_up_buffer");
+/*
+        var curr_index = streaming_audio_obj.index_stream;
+        var max_index = streaming_audio_obj.max_index;
+
+        var local_index_max = audio_obj_from_server.buffer.length;
+
+        console.log(curr_index + " out of " + max_index, " local_index_max " + local_index_max);
+
+        for (var local_index = 0; local_index < local_index_max && curr_index < max_index;) {
+
+            streaming_audio_obj.buffer[curr_index] = audio_obj_from_server.buffer[local_index];
+            local_index++;
+            curr_index++;
+        };
+
+        streaming_audio_obj.index_stream = curr_index;
+
+        communication_sockets.socket_client(5, null, top_up_buffer);
+        */
+    }
+
     function forward_audio_buffer_to_player(audio_obj_from_server) {
 
         server_side_audio_obj = audio_obj_from_server;
@@ -108,11 +136,14 @@ var web_audio_player = function() {
     function cb_stream_is_complete() {
 
         console.log("SETTING streaming_status_done ... SINCE TOP of cb_stream_is_complete");
+        console.log("SETTING streaming_status_done ... SINCE TOP of cb_stream_is_complete");
+        console.log("SETTING streaming_status_done ... SINCE TOP of cb_stream_is_complete");
 
         flag_streaming_status = streaming_status_done;
 
+        console.log("SETTING flag_streaming_status ", flag_streaming_status);
     }
-
+/*
     function cb_stream_audio_buffer_to_player(audio_obj_from_server) {
 
         var curr_index = streaming_audio_obj.index_stream;
@@ -190,10 +221,12 @@ var web_audio_player = function() {
             }
         };
     };      //      cb_stream_audio_buffer_to_player
-
+*/
     // ---
 
     function cb_stream_audio_buffer_to_web_audio_player(audio_obj_from_server) { // stream the right way
+
+        console.log("cb_stream_audio_buffer_to_web_audio_player ... flag_streaming_status ", flag_streaming_status);
 
         var curr_index = streaming_audio_obj.index_stream;
         var max_index = streaming_audio_obj.max_index;
@@ -211,7 +244,7 @@ var web_audio_player = function() {
 
         streaming_audio_obj.index_stream = curr_index;
 
-        console.log("Corinde where U at ... here I am ... cb_stream_audio_buffer_to_player");
+        console.log("Corinde where U at ... here I am ... cb_stream_audio_buffer_to_web_audio_player");
 
         if (typeof audio_obj_from_server !== "undefined") {
 
@@ -270,6 +303,74 @@ var web_audio_player = function() {
             }
         };
     };      //      cb_stream_audio_buffer_to_web_audio_player
+
+    // ---
+
+    function cb_receive_buffer_from_server_to_web_audio_player(audio_obj_from_server) {
+
+        console.log("Cairo ... flag_streaming_status ", flag_streaming_status);
+
+        if (flag_streaming_status === streaming_status_done) {
+
+            console.log("Alexander DONE ... flag_streaming_status ", flag_streaming_status);
+
+            // stens TODO - deallocate web audio player 
+
+            return;
+        };
+    
+        var curr_index = streaming_audio_obj.index_stream;
+        var max_index = streaming_audio_obj.max_index;
+
+// bbb
+
+        if ((! flag_audio_rendering) && curr_index > cushion_factor * BUFF_SIZE_AUDIO_RENDERER) {
+
+            // have we accummulated sufficient safety buffer to launch audio rendering ?
+
+            console.log("BUFF_SIZE_AUDIO_RENDERER ", BUFF_SIZE_AUDIO_RENDERER);
+
+            // var streaming_node = audio_context.createScriptProcessor(BUFF_SIZE_AUDIO_RENDERER, 1, 1);
+            this.streaming_node = audio_context.createScriptProcessor(BUFF_SIZE_AUDIO_RENDERER, 1, 1);
+
+            setup_onaudioprocess_callback_stream(streaming_node, streaming_audio_obj.buffer,
+                streaming_audio_obj.buffer.length, set_false_in_middle_of_playback);
+
+            // followup_fft(streaming_node);
+            streaming_node.connect(gain_node);
+
+            flag_streaming_status = streaming_status_active;
+
+            flag_audio_rendering = true;
+
+            streaming_node.top_up_buffer = top_up_buffer;
+
+            // return;
+        }
+
+
+
+        var local_index_max = audio_obj_from_server.buffer.length;
+
+        console.log(curr_index + " out of " + max_index, " local_index_max " + local_index_max);
+
+        for (var local_index = 0; local_index < local_index_max && curr_index < max_index;) {
+
+            streaming_audio_obj.buffer[curr_index] = audio_obj_from_server.buffer[local_index];
+            local_index++;
+            curr_index++;
+        };
+
+        streaming_audio_obj.index_stream = curr_index;
+
+        console.log("Corinde where U at ... here I am ... cb_stream_audio_buffer_to_web_audio_player");
+
+        // ---
+
+        communication_sockets.socket_client(5, null, cb_receive_buffer_from_server_to_web_audio_player);
+
+
+    };      //      cb_receive_buffer_from_server_to_web_audio_player
 
     // ---
 
@@ -875,7 +976,7 @@ The buffer passed to decodeAudioData contains an unknown content type.
         given_node.MIN_FREQ = g_MIN_FREQ;
         given_node.MAX_FREQ = g_MAX_FREQ;
 
-        // bbb
+        // 
 
         given_node.sample_freq = given_node.MIN_FREQ; // Hertz
         given_node.BUFF_SIZE = g_BUFF_SIZE;
@@ -1002,6 +1103,15 @@ The buffer passed to decodeAudioData contains an unknown content type.
 
                 var render_input_buffer;
 
+
+
+                console.log("curr_index_synth_buffer ", curr_index_synth_buffer, 
+                            " out of render_size_buffer ", render_size_buffer);
+
+
+
+
+
                 // stens TODO - how to pass in own buffer instead of being given object: out so I can do a circular ring of such buffers
 
                 render_input_buffer = event.outputBuffer.getChannelData(0); // stens TODO - do both channels not just left
@@ -1030,11 +1140,27 @@ The buffer passed to decodeAudioData contains an unknown content type.
 
                         done_callback();
 
-                        // console.log('render DONE curr_index_synth_buffer ', curr_index_synth_buffer);
+                        console.log('render DONE curr_index_synth_buffer ', curr_index_synth_buffer);
                     }
                 }
 
                 // ---
+
+                if (given_node                                      &&
+                    typeof given_node.top_up_buffer !== "undefined" &&
+                    flag_streaming_status           !== streaming_status_done) {
+
+                    console.log("ABOUT to call given_node.top_up_buffer");
+
+                    given_node.top_up_buffer();
+
+                } else {
+
+                    console.log("Boo Hoo   ... top_up_buffer   says good-bye");
+                }
+
+
+
 
                 // console.log('render_audio_buffer sending pipeline_buffer_for_time_domain_cylinder...');
 
@@ -1281,6 +1407,32 @@ The buffer passed to decodeAudioData contains an unknown content type.
                 }
 
 
+                case 10 : {
+
+                    console.log("stream audio from server to client browser");
+
+                    if (flag_streaming_status !== streaming_status_ready) {
+
+                        console.error("NOTICE - currently is middle of previous streaming request ... try later");
+                        return;
+                    }
+
+                    // ---
+
+                    streaming_audio_obj.buffer = new Float32Array(BUFFER_SIZE_STREAM_QUEUE);
+                    streaming_audio_obj.max_index = BUFFER_SIZE_STREAM_QUEUE;
+
+
+                    communication_sockets.set_stream_is_complete_cb(cb_stream_is_complete);
+
+                    // communication_sockets.socket_client(5, null, cb_stream_audio_buffer_to_player);
+                    // communication_sockets.socket_client(6, null, cb_stream_audio_buffer_to_web_audio_player);
+                    communication_sockets.socket_client(6, null, cb_receive_buffer_from_server_to_web_audio_player);
+
+                    break;
+                }
+
+
                 default : {
 
                     console.error("ERROR - failed to match given_flavor ", given_flavor);
@@ -1318,7 +1470,8 @@ The buffer passed to decodeAudioData contains an unknown content type.
         resume_jam_sound: resume_jam_sound,
         play_jam_N_do_sample: play_jam_N_do_sample,
         do_mute: do_mute,
-        un_mute: un_mute
+        un_mute: un_mute,
+        cb_stream_is_complete : cb_stream_is_complete
     };
 
 }(); //  web_audio_player = function()

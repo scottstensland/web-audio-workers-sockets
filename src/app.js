@@ -12,6 +12,24 @@ var express = require("express");
 var app = express();
 var port = process.env.PORT || 8888;
 
+// ---
+
+
+var audio_utils = require("audio-utils").audio_utils();
+
+// ---
+
+var cfg = require("../config");
+
+// console.log("here is cfg ", cfg);
+
+var media_dir = cfg.media_dir;
+
+console.log("here is media_dir ", media_dir);
+
+server_comms.set_media_dir(media_dir);
+
+// ---
 
 app.use(express.static(__dirname + "/")); // stens TODO - need to handle 404 file NOT found esp wav file
 
@@ -61,6 +79,7 @@ wss.on("connection", function(ws) {
         //     return;
         // };
 
+        // server_comms.route_msg(received_json, received_data, ws);
         server_comms.route_msg(received_json, received_data, ws);
     });
 

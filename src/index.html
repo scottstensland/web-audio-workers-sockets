@@ -1,11 +1,9 @@
 <html>
   <head>
 
-  <!-- // <script type="text/javascript" src="shared_utils.js"></script> -->
-  
-
-  <!-- // <script type="text/javascript" src="communication_sockets.js"></script> -->
-  <!-- // <script type="text/javascript" src="web_audio_player.js"></script> -->
+  <script type="text/javascript" src="shared_utils.js"></script>
+  <script type="text/javascript" src="communication_sockets.js"></script>
+  <script type="text/javascript" src="web_audio_player.js"></script>
   <script type="text/javascript" src="client_comms_mgr.js"></script>
   <script type="text/javascript" src="webworker_mgr.js"></script>
 
@@ -50,7 +48,7 @@ function internal_webGLStart() {
 
   // console.log("here is shared_utils ", shared_utils);
 
-  // communication_sockets.socket_client(1); // create websocket connection from browser to server
+  communication_sockets.socket_client(1); // create websocket connection from browser to server
 
   // ------------------------------
 
@@ -66,7 +64,7 @@ function internal_webGLStart() {
 
   // ----------------------
 
-  // web_audio_player.init_context_audio();
+  web_audio_player.init_context_audio();
 
   // shim layer with setTimeout fallback
 window.requestAnimFrame = (function(){
@@ -107,6 +105,9 @@ return {
 
     <p>  
 
+    <button onclick="web_audio_player.render_buffer(10)">stream audio</button>
+
+        <br>     <!-- .....................  -->
         <br>     <!-- .....................  -->
 
     <!-- <button onclick="web_audio_player.render_buffer(8)">stream audio from server</button> -->
