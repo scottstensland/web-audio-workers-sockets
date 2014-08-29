@@ -48,7 +48,8 @@ function internal_webGLStart() {
 
   // console.log("here is shared_utils ", shared_utils);
 
-  communication_sockets.socket_client(1); // create websocket connection from browser to server
+  // communication_sockets.socket_client(1); // create websocket connection from browser to server
+  communication_sockets.socket_client({ mode : 1}); // create websocket connection from browser to server
 
   // ------------------------------
 

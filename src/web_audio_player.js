@@ -103,8 +103,10 @@ var web_audio_player = function() {
 
         communication_sockets.socket_client(5, null, top_up_buffer);
         */
-    }
+    };
 
+
+/*
     function forward_audio_buffer_to_player(audio_obj_from_server) {
 
         server_side_audio_obj = audio_obj_from_server;
@@ -130,6 +132,7 @@ var web_audio_player = function() {
 
         }
     };
+*/
 
     // ---
 
@@ -223,7 +226,7 @@ var web_audio_player = function() {
     };      //      cb_stream_audio_buffer_to_player
 */
     // ---
-
+/*
     function cb_stream_audio_buffer_to_web_audio_player(audio_obj_from_server) { // stream the right way
 
         console.log("cb_stream_audio_buffer_to_web_audio_player ... flag_streaming_status ", flag_streaming_status);
@@ -303,7 +306,7 @@ var web_audio_player = function() {
             }
         };
     };      //      cb_stream_audio_buffer_to_web_audio_player
-
+*/
     // ---
 
     function cb_receive_buffer_from_server_to_web_audio_player(audio_obj_from_server) {
@@ -367,7 +370,19 @@ var web_audio_player = function() {
 
         // ---
 
-        communication_sockets.socket_client(5, null, cb_receive_buffer_from_server_to_web_audio_player);
+                    // var comm_msg = {
+
+                    //     mode : 6,
+                    //     callback : cb_receive_buffer_from_server_to_web_audio_player,
+                    //     media_file : "2500_hz_sine_2_seconds.wav"
+                    // };
+
+        // communication_sockets.socket_client(5, null, cb_receive_buffer_from_server_to_web_audio_player);
+        communication_sockets.socket_client({
+
+            mode : 6, 
+            callback : cb_receive_buffer_from_server_to_web_audio_player
+        });
 
 
     };      //      cb_receive_buffer_from_server_to_web_audio_player
@@ -818,6 +833,8 @@ var web_audio_player = function() {
         // var chosen_audio_file = "Justice_Genesis_mono-y6iHYTjEyKU.wav";
         // var chosen_audio_file = "Justice_Genesis_first_30_seconds.wav";
         var chosen_audio_file = "Justice_Genesis_first_30_seconds_tight.wav";
+
+
 
 /*
 
@@ -1422,12 +1439,19 @@ The buffer passed to decodeAudioData contains an unknown content type.
                     streaming_audio_obj.buffer = new Float32Array(BUFFER_SIZE_STREAM_QUEUE);
                     streaming_audio_obj.max_index = BUFFER_SIZE_STREAM_QUEUE;
 
+                    var comm_msg = {
+
+                        mode : 6,
+                        callback : cb_receive_buffer_from_server_to_web_audio_player,
+                        media_file : "2500_hz_sine_2_seconds.wav"
+                    };
 
                     communication_sockets.set_stream_is_complete_cb(cb_stream_is_complete);
 
                     // communication_sockets.socket_client(5, null, cb_stream_audio_buffer_to_player);
                     // communication_sockets.socket_client(6, null, cb_stream_audio_buffer_to_web_audio_player);
-                    communication_sockets.socket_client(6, null, cb_receive_buffer_from_server_to_web_audio_player);
+                    // communication_sockets.socket_client(6, null, cb_receive_buffer_from_server_to_web_audio_player);
+                    communication_sockets.socket_client(comm_msg);
 
                     break;
                 }

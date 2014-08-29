@@ -251,7 +251,8 @@ var communication_sockets = function() {
 
         if (!flag_connected) {
 
-            console.log("hit button create_websocket_connection");
+            // console.log("hit button create_websocket_connection");
+            console.error("ERROR - no web socket connection");
             return;
         };
 
@@ -275,7 +276,22 @@ var communication_sockets = function() {
         web_socket.send(request_msg);
     };
 
-    function socket_client(given_mode, given_binary_data, given_callback) {
+    // function socket_client(given_mode, given_binary_data, given_callback) {
+    function socket_client(given_msg) {
+
+                        // mode : 6,
+                        // callback : cb_receive_buffer_from_server_to_web_audio_player,
+                        // media_file : "2500_hz_sine_2_seconds.wav"
+
+        var given_mode = given_msg.mode || 1;
+        var given_binary_data = given_msg.binary_data || null;
+        var given_callback = given_msg.callback || null;
+        var given_media_file = given_msg.media_file || null;
+
+        console.log("given_mode ", given_mode);
+        console.log("given_binary_data ", given_binary_data);
+        console.log("given_callback ", given_callback);
+        console.log("given_media_file ", given_media_file);
 
         switch (given_mode) {
 
@@ -340,12 +356,16 @@ var communication_sockets = function() {
 
             case 6 : {
 
-                console.log('...  socket_client mode Five  ... stream audio buffer from server ');
+                console.log('...  socket_client mode SIX  ... stream audio buffer from server ');
 
                 cb_for_client = given_callback;
 
                 var requested_action = "stream_audio_to_client";
-                var requested_source = "Justice_Genesis_first_30_seconds_tight.wav"; // get buffer of this from svr
+
+                // tell server to stream this audio
+                // var requested_source = "Justice_Genesis_first_30_seconds_tight.wav";
+                // var requested_source = "2500_hz_sine.wav"; 
+                var requested_source = given_media_file;
 
                 request_server_send_binary(requested_action, requested_source, given_callback);
 
