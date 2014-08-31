@@ -91,10 +91,13 @@ var communication_sockets = function() {
 
                         if ("yes" == received_json.streaming_is_done) {
 
-                            console.log("OK received_json.streaming_is_done == yes ... so call ",
-                                            cb_stream_is_complete.name);
+                            var max_index = received_json.max_index;
 
-                            cb_stream_is_complete();
+                            console.log("OK received_json.streaming_is_done == yes  max_index ", max_index,
+                                " ... so call ",  cb_stream_is_complete.name);
+
+                            // cb_stream_is_complete();
+                            cb_stream_is_complete(max_index);
                         }
 
 

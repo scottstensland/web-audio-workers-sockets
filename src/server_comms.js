@@ -101,10 +101,13 @@ var stream_another_chunk_to_client = function(received_json, given_request, curr
 
         var streaming_is_done_msg = {
 
-            streaming_is_done : "yes"
+            streaming_is_done : "yes",
+            max_index : max_index
         };
 
         // bbb
+
+        console.log("streaming_is_done_msg ", streaming_is_done_msg);
 
         // curr_ws.send("we are done streaming", {binary: false, mask: true});
         curr_ws.send(JSON.stringify(streaming_is_done_msg), {binary: false, mask: true});

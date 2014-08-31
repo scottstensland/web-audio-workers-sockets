@@ -35,6 +35,8 @@ var web_audio_player = function() {
         index_stream : 0
     };
 
+    var max_index;  // suppled by server side ... only populated when server senses source media has been exhausted
+
     var streaming_status_ready      = "streaming_status_ready";
     var streaming_status_preloading = "streaming_status_preloading";
     var streaming_status_active     = "streaming_status_active";
@@ -136,13 +138,18 @@ var web_audio_player = function() {
 
     // ---
 
-    function cb_stream_is_complete() {
+    // bbb
+
+    function cb_stream_is_complete(given_max_index) {
+
+        max_index = given_max_index;
 
         console.log("SETTING streaming_status_done ... SINCE TOP of cb_stream_is_complete");
         console.log("SETTING streaming_status_done ... SINCE TOP of cb_stream_is_complete");
         console.log("SETTING streaming_status_done ... SINCE TOP of cb_stream_is_complete");
 
         flag_streaming_status = streaming_status_done;
+
 
         console.log("SETTING flag_streaming_status ", flag_streaming_status);
     }
@@ -1121,13 +1128,16 @@ The buffer passed to decodeAudioData contains an unknown content type.
                 var render_input_buffer;
 
 
-
+/*
                 console.log("curr_index_synth_buffer ", curr_index_synth_buffer, 
                             " out of render_size_buffer ", render_size_buffer);
 
 
 
-
+                console.log("max_index ", max_index);
+                console.log("curr_index_synth_buffer ", curr_index_synth_buffer);
+                console.log((flag_streaming_status === streaming_status_done) ? "NOT_DONE" : "YES_DONE_NOW");
+*/
 
                 // stens TODO - how to pass in own buffer instead of being given object: out so I can do a circular ring of such buffers
 
@@ -1141,6 +1151,12 @@ The buffer passed to decodeAudioData contains an unknown content type.
                     curr_index_synth_buffer++;
 
                     if (curr_index_synth_buffer >= render_size_buffer) {
+
+
+
+                        // flag_streaming_status === streaming_status_done &&
+                        // max_index
+
 
                         // console.log('\n\ncw + ss    thursday        434             \n\n');
 
@@ -1438,6 +1454,10 @@ The buffer passed to decodeAudioData contains an unknown content type.
 
                     streaming_audio_obj.buffer = new Float32Array(BUFFER_SIZE_STREAM_QUEUE);
                     streaming_audio_obj.max_index = BUFFER_SIZE_STREAM_QUEUE;
+
+                        // media_file : "Justice_Genesis_first_30_seconds_tight.wav"
+
+                        // media_file : "2500_hz_sine_2_seconds.wav"
 
                     var comm_msg = {
 
