@@ -64,10 +64,9 @@ function internal_webGLStart() {
   };
 
   // ----------------------
-
   web_audio_player.init_context_audio();
 
-  // shim layer with setTimeout fallback
+/*
 window.requestAnimFrame = (function(){
   return  window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
@@ -79,13 +78,11 @@ window.requestAnimFrame = (function(){
 })();
 
 
-// usage:
-// instead of setInterval(render, 16) ....
-
 (function animloop(){
   requestAnimFrame(animloop); // keeps alive a pointer into this block
-  // render();
 })();
+
+*/
 
 }       //      internal_webGLStart
 

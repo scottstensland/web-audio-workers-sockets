@@ -51,7 +51,9 @@ var communication_sockets = function() {
 
         host = location.origin.replace(/^http/, 'ws');
         // web_socket = new WebSocket(host);
-        web_socket = new WebSocket(host, ["chat"]);
+        // web_socket = new WebSocket(host, ["chat"]);
+        web_socket = new WebSocket(host, ["chat", "superchat"]);
+
 
 
 
@@ -293,7 +295,7 @@ var communication_sockets = function() {
 
         console.log("given_mode ", given_mode);
         console.log("given_binary_data ", given_binary_data);
-        console.log("given_callback ", given_callback);
+        // console.log("given_callback ", given_callback);
         console.log("given_media_file ", given_media_file);
 
         switch (given_mode) {

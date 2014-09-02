@@ -1,11 +1,14 @@
 {
   "name": "web-audio-workers-sockets",
-  "version": "1.0.4-1",
+  "version": "1.2.0",
   "description": "stream audio using web sockets in web worker rendered using web audio",
   "main": "index.js",
   "scripts": {
-	"start": "node src/app.js",
-	"test": "node test/node_cli_test.js"
+     "start": "node src/app.js",
+     "startmin": "node min_src/app.js",
+     "startorig": "node src/app.js",
+     "startnew": "node bkup_src/app.js",
+	   "test": "node test/node_cli_test.js"
   },
   "engines": {
     "node": "0.10.x"

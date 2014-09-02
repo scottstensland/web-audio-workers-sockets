@@ -30,7 +30,6 @@ console.log("shared_utils ", shared_utils);
 
 // --------------------------------------------------------  //
 
-
 // 2^9 512
 // 2^10 1024
 // 2^11 2048
@@ -89,15 +88,16 @@ var stream_another_chunk_to_client = function(received_json, given_request, curr
         curr_index++;
     };
 
-    curr_ws.send(temp_stream_chunk_buffer, {binary: true, mask: true}); // send binary buffer
+    console.log("about to send binary temp_stream_chunk_buffer to client");
+
+    // curr_ws.send(temp_stream_chunk_buffer, {binary: true, mask: true}); // send binary buffer
+    curr_ws.send(temp_stream_chunk_buffer, {binary: true, mask: false}); // send binary buffer
 
     streaming_buffer_obj.index_stream = curr_index;
 
     if (curr_index == max_index) {
 
         streaming_buffer_obj.curr_state = stream_status_complete;
-
-        // curr_ws.send("we are done streaming", {binary: false, mask: true});
 
         var streaming_is_done_msg = {
 
@@ -109,8 +109,8 @@ var stream_another_chunk_to_client = function(received_json, given_request, curr
 
         console.log("streaming_is_done_msg ", streaming_is_done_msg);
 
-        // curr_ws.send("we are done streaming", {binary: false, mask: true});
-        curr_ws.send(JSON.stringify(streaming_is_done_msg), {binary: false, mask: true});
+        // curr_ws.send(JSON.stringify(streaming_is_done_msg), {binary: false, mask: true});
+        curr_ws.send(JSON.stringify(streaming_is_done_msg), {binary: false, mask: false});
     }
 }
 
@@ -145,9 +145,8 @@ var read_file_pop_buffer = function(received_json, given_request, curr_ws) {
         shared_utils.show_object(audio_obj,
             "backHome audio_obj 32 bit signed float   read_file_done", "total", 10);
 
-        // curr_ws.send(received_json, {binary: false, mask: true}); // send text
-        // curr_ws.send(given_request, {binary: false, mask: true}); // send text
-        curr_ws.send("max_index=" + streaming_buffer_obj.max_index, {binary: false, mask: true}); // send text
+        // curr_ws.send("max_index=" + streaming_buffer_obj.max_index, {binary: false, mask: true}); // send text
+        curr_ws.send("max_index=" + streaming_buffer_obj.max_index, {binary: false, mask: false}); // send text
 
         // JSON.stringify
 
@@ -156,9 +155,7 @@ var read_file_pop_buffer = function(received_json, given_request, curr_ws) {
     }));
 };
 
-
 // ---
-
 
 var read_file_pop_buffer_stream_back_to_client = function(received_json, given_request, curr_ws) {
 
@@ -173,7 +170,6 @@ var read_file_pop_buffer_stream_back_to_client = function(received_json, given_r
         stream_another_chunk_to_client(received_json, given_request, curr_ws);
     }
 };      //      read_file_pop_buffer_stream_back_to_client
-
 
 // ---
 
@@ -227,7 +223,8 @@ var route_msg = function(received_json, received_data, curr_ws) {
             console.log("OOKKK seeing null  requested_action");
             // send_binary_back_to_client(received_json, received_data, curr_ws);
 
-            curr_ws.send(received_data, {binary: false, mask: true}); // send text
+            // curr_ws.send(received_data, {binary: false, mask: true}); // send text
+            curr_ws.send(received_data, {binary: false, mask: false}); // send text
 
             break;
         };
