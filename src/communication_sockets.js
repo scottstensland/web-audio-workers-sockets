@@ -11,6 +11,10 @@ var communication_sockets = function() {
     var cb_for_client;
     var cb_stream_is_complete;
 
+    var server_supplied_max_media_size;
+    var flag_max_media_size_populated = false;
+    var flag_max_media_size_retrieved = false;
+
     // ---
 
     // function forward_audio_buffer_to_player() {
@@ -30,6 +34,24 @@ var communication_sockets = function() {
 
         cb_stream_is_complete = given_cb_stream_is_complete; // when server side says stream is done this gets called
     }
+
+    var pop_json_from_server = function(json_from_server, received_json) {
+
+        for (var curr_property in received_json) {
+
+            // NOTICE - this makes NO attempt to avoid replacing previous value of given key if any
+
+            json_from_server[curr_property] = received_json[curr_property];
+
+            console.log("server supplied key/value ", curr_property, received_json[curr_property]);
+
+
+            // max_index
+
+            // bbb
+
+        }
+    };
 
 
     console.log("create_websocket_connection");
@@ -55,6 +77,7 @@ var communication_sockets = function() {
         web_socket = new WebSocket(host, ["chat", "superchat"]);
 
 
+        var all_tags_from_server = {};
 
 
         console.log("web_socket ", web_socket);
@@ -88,6 +111,22 @@ var communication_sockets = function() {
                     var received_json = JSON.parse(event.data);
 
                     console.log("received_json ", received_json);
+
+                    pop_json_from_server(all_tags_from_server, received_json);
+
+                    console.log("all_tags_from_server ", all_tags_from_server);
+
+                    if (typeof received_json["max_index"] !== "undefined" &&
+                        false === flag_max_media_size_retrieved) {
+
+                        console.log("Corinde Stensland seeing max_index  ", received_json["max_index"]);
+
+                        server_supplied_max_media_size = received_json["max_index"];
+
+                        flag_max_media_size_retrieved = true;
+                    }
+
+                    // ---
 
                     if (typeof received_json.streaming_is_done !== "undefined") {
 
@@ -375,6 +414,19 @@ var communication_sockets = function() {
                 request_server_send_binary(requested_action, requested_source, given_callback);
 
                 break;
+            }
+
+            case 7 : {
+
+                console.log('...  socket_client mode SEVEN  ... retrieve server side supplied max media size ');
+
+                // bbb
+
+                return {
+
+                    flag_max_media_size_retrieved : flag_max_media_size_retrieved,
+                    server_supplied_max_media_size : server_supplied_max_media_size
+                }
             }
 
             default : {

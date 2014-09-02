@@ -1,6 +1,6 @@
 {
   "name": "web-audio-workers-sockets",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "stream audio using web sockets in web worker rendered using web audio",
   "main": "index.js",
   "scripts": {

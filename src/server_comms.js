@@ -114,6 +114,33 @@ var stream_another_chunk_to_client = function(received_json, given_request, curr
     }
 }
 
+// ---
+
+var send_client_source_data_info = function(audio_obj, curr_websocket) {
+
+    var all_property_tags = {};
+
+    for (var curr_property in audio_obj) {
+
+        if (curr_property === "buffer") {
+
+            continue;
+        }
+
+        console.log("curr_property ", curr_property);
+
+        all_property_tags[curr_property] = audio_obj[curr_property];
+    }
+
+    console.log("all_property_tags ", all_property_tags);
+
+// bbb
+
+    curr_websocket.send(JSON.stringify(all_property_tags), {binary: false, mask: false});
+}
+
+// ---
+
 var read_file_pop_buffer = function(received_json, given_request, curr_ws) {
 
     console.log("about to parse wav file, pop buffer to send back to client browser");
@@ -146,7 +173,9 @@ var read_file_pop_buffer = function(received_json, given_request, curr_ws) {
             "backHome audio_obj 32 bit signed float   read_file_done", "total", 10);
 
         // curr_ws.send("max_index=" + streaming_buffer_obj.max_index, {binary: false, mask: true}); // send text
-        curr_ws.send("max_index=" + streaming_buffer_obj.max_index, {binary: false, mask: false}); // send text
+        // curr_ws.send("max_index=" + streaming_buffer_obj.max_index, {binary: false, mask: false}); // send text
+
+        send_client_source_data_info(audio_obj, curr_ws);
 
         // JSON.stringify
 

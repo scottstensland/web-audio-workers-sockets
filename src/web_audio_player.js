@@ -17,13 +17,16 @@ var audio_obj_from_server = {};
 
 var flag_audio_rendering = false;
 
+var flag_was_rendering_buffer_allocated = false;
+
 var did_one_draw = false;
 
 var was_anything_stopped = false;
 
 var microphone_data = {};
 
-var BUFFER_SIZE_STREAM_QUEUE = 2097152; // stens TODO - wrap into a circular queue
+// var BUFFER_SIZE_STREAM_QUEUE = 2097152; // stens TODO - wrap into a circular queue
+var BUFFER_SIZE_STREAM_QUEUE; // stens TODO - wrap into a circular queue
 var curr_index_stream_buffer = 0;
 var server_side_audio_obj;
 var streaming_audio_obj = {
@@ -315,9 +318,45 @@ function cb_stream_is_complete(given_max_index) {
 */
     // ---
 
+function allocate_streaming_buffer(audio_obj) {
+
+    if (flag_was_rendering_buffer_allocated) {
+
+        return;
+    }
+
+    console.log("... about to call  allocate_streaming_buffer  ");
+
+    console.log("Corinde Stensland allocate_streaming_buffer  ");
+
+    // bbbbbbbb
+
+    var server_supplied_media_obj = communication_sockets.socket_client({ mode : 7 });
+
+    if (typeof server_supplied_media_obj["flag_max_media_size_retrieved"] !== "undefined" &&
+        typeof server_supplied_media_obj["server_supplied_max_media_size"] !== "undefined" &&
+        true === server_supplied_media_obj["flag_max_media_size_retrieved"]) {
+
+        BUFFER_SIZE_STREAM_QUEUE = server_supplied_media_obj["server_supplied_max_media_size"];
+
+        audio_obj.buffer = new Float32Array(BUFFER_SIZE_STREAM_QUEUE);
+        audio_obj.max_index = BUFFER_SIZE_STREAM_QUEUE;
+
+        flag_was_rendering_buffer_allocated = true;
+
+        console.log("Corinde Stensland BUFFER_SIZE_STREAM_QUEUE  ", BUFFER_SIZE_STREAM_QUEUE);
+
+    } else {
+
+        console.error("ERROR - failed to resolve server supplied media size");
+    }
+}
+
 function cb_receive_buffer_from_server_to_web_audio_player(audio_obj_from_server) {
 
     console.log("Cairo ... flag_streaming_status ", flag_streaming_status);
+
+    allocate_streaming_buffer(streaming_audio_obj);
 
     if (flag_streaming_status === streaming_status_done) {
 
@@ -336,6 +375,9 @@ function cb_receive_buffer_from_server_to_web_audio_player(audio_obj_from_server
     if ((! flag_audio_rendering) && curr_index > cushion_factor * BUFF_SIZE_AUDIO_RENDERER) {
 
         // have we accummulated sufficient safety buffer to launch audio rendering ?
+
+        // allocate_streaming_buffer(streaming_audio_obj);
+
 
         console.log("BUFF_SIZE_AUDIO_RENDERER ", BUFF_SIZE_AUDIO_RENDERER);
 
@@ -1472,8 +1514,8 @@ function render_buffer(given_flavor) {
 
                 // ---
 
-                streaming_audio_obj.buffer = new Float32Array(BUFFER_SIZE_STREAM_QUEUE);
-                streaming_audio_obj.max_index = BUFFER_SIZE_STREAM_QUEUE;
+                // streaming_audio_obj.buffer = new Float32Array(BUFFER_SIZE_STREAM_QUEUE);
+                // streaming_audio_obj.max_index = BUFFER_SIZE_STREAM_QUEUE;
 
                     // media_file : "Justice_Genesis_first_30_seconds_tight.wav"
                     // media_file : "2500_hz_sine_2_seconds.wav"
